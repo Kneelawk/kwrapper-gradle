@@ -1,0 +1,19 @@
+apply plugin: 'java'
+apply plugin: 'eclipse'
+
+sourceCompatibility = 1.8
+
+version = "0.0.1"
+
+repositories {
+	jcenter()
+	
+	maven {
+		name 'Gradle Releases'
+		url 'https://repo.gradle.org/gradle/libs-releases-local/'
+	}
+}
+
+dependencies {
+	compile "org.gradle:gradle-core:4.3.1"
+}
