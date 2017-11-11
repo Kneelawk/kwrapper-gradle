@@ -21,4 +21,5 @@ repositories {
 }
 
 dependencies {
+	compile 'com.google.guava:guava:23.4-jre'
 }
