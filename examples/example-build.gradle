@@ -1,0 +1,35 @@
+plugins {
+	id 'java'
+	id 'eclipse'
+	id 'com.github.kneelawk.kwrapper'
+}
+
+sourceCompatibility = 1.8
+
+version = '0.0.1'
+
+repositories {
+	jcenter()
+}
+
+dependencies {
+	compile 'com.google.guava:guava:23.4-jre'
+}
+
+kwrapper {
+	// sets the Main-Class in the launcher jar manifest
+	launcherMain = 'com.kneelawk.hello.HelloLauncher'
+	// copies these to the base structure of the launcher jar
+	include('LICENSE', 'README.md')
+	
+	// defaults
+	//launcherSourceSet = 'launcher'
+	//applicationDir = 'app'
+	//libraryDir = 'libs'
+	//nativesDir = 'natives'
+	// copies child directory structures from these dirs into natives dir in the launcher jar
+	// conflicting files in dirs listed earlier are overriden with ones in dirs listed later
+	//includeNatives('natives')
+	// you can exclude the natives dir with "excludeNatives('natives')"
+}
+	
