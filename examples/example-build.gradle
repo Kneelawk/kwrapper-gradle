@@ -27,9 +27,19 @@ kwrapper {
 	//applicationDir = 'app'
 	//libraryDir = 'libs'
 	//nativesDir = 'natives'
+	
+	//launcherSource {
+		//include 'src/launcher/java'
+		//include 'CPControl/src/main/java'
+		// you can exclude either of the default dirs with "exclude '<default dir>'"
+		// replacing <default dir> with the dir you want to exclude
+	//}
+	
 	// copies child directory structures from these dirs into natives dir in the launcher jar
 	// conflicting files in dirs listed earlier are overriden with ones in dirs listed later
-	//includeNatives('natives')
-	// you can exclude the natives dir with "excludeNatives('natives')"
+	//natives {
+		//include 'natives'
+		// you can exclude the default 'natives' dir with "exclude 'natives'"
+	//}
 }
 	
