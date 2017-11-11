@@ -29,7 +29,7 @@ kwrapper {
 	//nativesDir = 'natives'
 	
 	//launcherSource {
-		//include 'src/launcher/java'
+		//include 'src/<launcherSourceSet>/java'
 		//include 'CPControl/src/main/java'
 		// you can exclude either of the default dirs with "exclude '<default dir>'"
 		// replacing <default dir> with the dir you want to exclude
