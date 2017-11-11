@@ -25,7 +25,7 @@ kwrapper {
 	// defaults
 	//launcherSourceSet = 'launcher'
 	//applicationDir = 'app'
-	//libraryDir = 'libs'
+	//librariesDir = 'libs'
 	//nativesDir = 'natives'
 	
 	//launcherSource {
