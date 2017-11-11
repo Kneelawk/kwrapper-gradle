@@ -7,6 +7,15 @@ sourceCompatibility = 1.8
 
 version = "0.0.1"
 
+gradlePlugin {
+	plugins {
+		kwrapper {
+			id = "com.github.kneelawk.kwrapper"
+			implementationClass = "com.kneelawk.kwrapper.KWrapperPlugin"
+		}
+	}
+}
+
 repositories {
 	jcenter()
 }
