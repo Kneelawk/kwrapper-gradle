@@ -7,6 +7,7 @@ import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.plugins.JavaPlugin;
+import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.bundling.Jar;
@@ -28,10 +29,10 @@ public class KWrapperPlugin implements Plugin<Project> {
 	public SourceSet configureSourceSets(Project project, KWrapperExtension ext) {
 		// create the launcher source set
 		SourceSetContainer sourceSets = (SourceSetContainer) project.getProperties().get("sourceSets");
-		SourceSet launcher = sourceSets.create(ext.launcherSourceSet);
+		SourceSet launcher = sourceSets.create(ext.getLauncherSourceSet().get());
 
 		// add the launcher sources to the launcher source set
-		launcher.getJava().srcDir(ext.launcherSource);
+		launcher.getJava().srcDir(ext.getLauncherSource());
 
 		return launcher;
 	}
@@ -46,25 +47,25 @@ public class KWrapperPlugin implements Plugin<Project> {
 		launcherJar.setBaseName(project.getName() + "-all");
 
 		// set the jar's manifest's Main-Class attribute
-		HashMap<String, String> m = new HashMap<>();
-		m.put("Main-Class", ext.launcherMain);
+		HashMap<String, Property<String>> m = new HashMap<>();
+		m.put("Main-Class", ext.getLauncherMain());
 		launcherJar.getManifest().attributes(m);
 
 		// put the application jar into the app dir
-		launcherJar.from(jar.getOutputs().getFiles(), (spec) -> spec.into(ext.applicationDir));
+		launcherJar.from(jar.getOutputs().getFiles(), (spec) -> spec.into(ext.getApplicationDir()));
 
 		// put runtime dependencies into the libs dir
 		Configuration compile = project.getConfigurations().getByName("runtime");
-		launcherJar.from(compile, (spec) -> spec.into(ext.librariesDir));
+		launcherJar.from(compile, (spec) -> spec.into(ext.getLibrariesDir()));
 
 		// put the natives into the natives dir
-		launcherJar.from(ext.natives, (spec) -> spec.into(ext.nativesDir));
+		launcherJar.from(ext.getNatives(), (spec) -> spec.into(ext.getNativesDir()));
 
 		// add launcher classes to the jar
 		launcherJar.from(launcher.getOutput());
 
 		// add extra includes to the jar
-		launcherJar.from(ext.files);
+		launcherJar.from(ext.getFiles());
 
 		// set the task's group and description
 		launcherJar.setGroup("Build");
