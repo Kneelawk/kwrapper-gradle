@@ -1,7 +1,7 @@
 plugins {
 	id 'java'
 	id 'eclipse'
-	id 'com.github.kneelawk.kwrapper'
+	id 'com.github.kneelawk.kwrapper-gradle'
 }
 
 sourceCompatibility = 1.8

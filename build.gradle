@@ -1,16 +1,18 @@
 plugins {
 	id 'java-gradle-plugin'
 	id 'eclipse'
+	id 'maven-publish'
 }
 
 sourceCompatibility = 1.8
 
+group = "com.github.kneelawk"
 version = "0.0.1"
 
 gradlePlugin {
 	plugins {
 		kwrapper {
-			id = "com.github.kneelawk.kwrapper"
+			id = "com.github.kneelawk.kwrapper-gradle"
 			implementationClass = "com.kneelawk.kwrapper.KWrapperPlugin"
 		}
 	}
@@ -22,4 +24,12 @@ repositories {
 
 dependencies {
 	compile 'com.google.guava:guava:23.4-jre'
+}
+
+publishing {
+	publications {
+		mavenJava(MavenPublication) {
+			from components.java
+		}
+	}
 }
