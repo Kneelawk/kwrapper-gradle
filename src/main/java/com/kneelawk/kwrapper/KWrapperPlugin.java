@@ -1,5 +1,7 @@
 package com.kneelawk.kwrapper;
 
+import java.util.HashMap;
+
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
@@ -8,8 +10,6 @@ import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.bundling.Jar;
-
-import com.google.common.collect.ImmutableMap;
 
 public class KWrapperPlugin implements Plugin<Project> {
 
@@ -46,7 +46,9 @@ public class KWrapperPlugin implements Plugin<Project> {
 		launcherJar.setBaseName(project.getName() + "-all");
 
 		// set the jar's manifest's Main-Class attribute
-		launcherJar.getManifest().attributes(ImmutableMap.of("Main-Class", ext.launcherMain));
+		HashMap<String, String> m = new HashMap<>();
+		m.put("Main-Class", ext.launcherMain);
+		launcherJar.getManifest().attributes(m);
 
 		// put the application jar into the app dir
 		launcherJar.from(jar.getOutputs().getFiles(), (spec) -> spec.into(ext.applicationDir));
