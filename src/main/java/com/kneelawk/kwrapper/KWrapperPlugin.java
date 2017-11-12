@@ -52,14 +52,16 @@ public class KWrapperPlugin implements Plugin<Project> {
 		launcherJar.getManifest().attributes(m);
 
 		// put the application jar into the app dir
-		launcherJar.from(jar.getOutputs().getFiles(), (spec) -> spec.into(ext.getApplicationDir()));
+		launcherJar.from(jar.getOutputs().getFiles(),
+				(spec) -> spec.into(new CallableProviderWrapper<String>(ext.getApplicationDir())));
 
 		// put runtime dependencies into the libs dir
 		Configuration compile = project.getConfigurations().getByName("runtime");
-		launcherJar.from(compile, (spec) -> spec.into(ext.getLibrariesDir()));
+		launcherJar.from(compile, (spec) -> spec.into(new CallableProviderWrapper<String>(ext.getLibrariesDir())));
 
 		// put the natives into the natives dir
-		launcherJar.from(ext.getNatives(), (spec) -> spec.into(ext.getNativesDir()));
+		launcherJar.from(ext.getNatives(),
+				(spec) -> spec.into(new CallableProviderWrapper<String>(ext.getNativesDir())));
 
 		// add launcher classes to the jar
 		launcherJar.from(launcher.getOutput());
