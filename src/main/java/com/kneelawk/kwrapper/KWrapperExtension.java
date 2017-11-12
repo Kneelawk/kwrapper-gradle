@@ -1,36 +1,37 @@
 package com.kneelawk.kwrapper;
 
+import java.util.concurrent.Callable;
+
 import org.gradle.api.Project;
 import org.gradle.api.file.ConfigurableFileCollection;
-import org.gradle.api.provider.Property;
 
 public class KWrapperExtension {
-	final Property<String> launcherMain;
+	String launcherMain;
 	final ConfigurableFileCollection files;
 
-	final Property<String> launcherSourceSet;
-	final Property<String> applicationDir;
-	final Property<String> librariesDir;
-	final Property<String> nativesDir;
+	String launcherSourceSet;
+	String applicationDir;
+	String librariesDir;
+	String nativesDir;
 
 	final ConfigurableFileCollection launcherSource;
 	final ConfigurableFileCollection natives;
 
 	public KWrapperExtension(Project project) {
-		launcherMain = project.getObjects().property(String.class);
-		launcherMain.set("Launcher");
+		launcherMain = "Launcher";
 		files = project.files();
 
-		launcherSourceSet = project.getObjects().property(String.class);
-		launcherSourceSet.set("launcher");
-		applicationDir = project.getObjects().property(String.class);
-		applicationDir.set("app");
-		librariesDir = project.getObjects().property(String.class);
-		librariesDir.set("libs");
-		nativesDir = project.getObjects().property(String.class);
-		nativesDir.set("natives");
+		launcherSourceSet = "launcher";
+		applicationDir = "app";
+		librariesDir = "libs";
+		nativesDir = "natives";
 
-		launcherSource = project.files(launcherSourceSet.map((s) -> "src/" + s + "/java"), "CPControl/src/main/java");
+		launcherSource = project.files(new Callable<String>() {
+			@Override
+			public String call() throws Exception {
+				return "src/" + launcherSource + "/java";
+			}
+		}, "CPControl/src/main/java");
 		natives = project.files("natives");
 	}
 
