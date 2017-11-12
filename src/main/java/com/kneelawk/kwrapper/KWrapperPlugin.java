@@ -7,7 +7,6 @@ import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
 import org.gradle.api.plugins.JavaPlugin;
-import org.gradle.api.provider.Property;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.bundling.Jar;
@@ -47,8 +46,8 @@ public class KWrapperPlugin implements Plugin<Project> {
 		launcherJar.setBaseName(project.getName() + "-all");
 
 		// set the jar's manifest's Main-Class attribute
-		HashMap<String, Property<String>> m = new HashMap<>();
-		m.put("Main-Class", ext.getLauncherMain());
+		HashMap<String, String> m = new HashMap<>();
+		m.put("Main-Class", ext.getLauncherMain().get());
 		launcherJar.getManifest().attributes(m);
 
 		// put the application jar into the app dir
