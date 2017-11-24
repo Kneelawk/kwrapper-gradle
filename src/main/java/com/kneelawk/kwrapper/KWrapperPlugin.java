@@ -2,10 +2,12 @@ package com.kneelawk.kwrapper;
 
 import java.util.HashMap;
 
+import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.file.CopySpec;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
@@ -56,7 +58,14 @@ public class KWrapperPlugin implements Plugin<Project> {
 
 		// put runtime dependencies into the libs dir
 		Configuration compile = project.getConfigurations().getByName("runtime");
-		launcherJar.from(compile, (spec) -> spec.into(new CallableProviderWrapper<String>(ext.getLibrariesDir())));
+		launcherJar.from(compile, (spec) -> {
+			spec.into(new CallableProviderWrapper<String>(ext.getLibrariesDir()));
+			
+			// execute all modifying actions
+			for (Action<CopySpec> a : ext.getLibraryModifications()) {
+				a.execute(spec);
+			}
+		});
 
 		// put the natives into the natives dir
 		launcherJar.from(ext.getNatives(),
@@ -66,7 +75,7 @@ public class KWrapperPlugin implements Plugin<Project> {
 		launcherJar.from(launcher.getOutput());
 
 		// add extra includes to the jar
-		launcherJar.from(ext.getFiles());
+		launcherJar.with(ext.getExtra());
 
 		// set the task's group and description
 		launcherJar.setGroup("Build");

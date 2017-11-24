@@ -1,12 +1,20 @@
 package com.kneelawk.kwrapper;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import org.gradle.api.Action;
 import org.gradle.api.Project;
 import org.gradle.api.file.ConfigurableFileCollection;
+import org.gradle.api.file.CopySpec;
+import org.gradle.api.internal.ClosureBackedAction;
 import org.gradle.api.provider.Property;
+
+import groovy.lang.Closure;
 
 public class KWrapperExtension {
 	private Property<String> launcherMain;
-	private final ConfigurableFileCollection files;
+	private final CopySpec extra;
 
 	private Property<String> launcherSourceSet;
 	private Property<String> applicationDir;
@@ -16,10 +24,12 @@ public class KWrapperExtension {
 	private final ConfigurableFileCollection launcherSource;
 	private final ConfigurableFileCollection natives;
 
+	private final List<Action<CopySpec>> libraryModifications;
+
 	public KWrapperExtension(Project project) {
 		launcherMain = project.getObjects().property(String.class);
 		launcherMain.set("Launcher");
-		files = project.files();
+		extra = project.copySpec();
 
 		launcherSourceSet = project.getObjects().property(String.class);
 		launcherSourceSet.set("launcher");
@@ -32,6 +42,8 @@ public class KWrapperExtension {
 
 		launcherSource = project.files(launcherSourceSet.map((s) -> "src/" + s + "/java"), "CPControl/src/main/java");
 		natives = project.files("natives");
+
+		libraryModifications = new ArrayList<>();
 	}
 
 	public Property<String> getLauncherMain() {
@@ -134,8 +146,8 @@ public class KWrapperExtension {
 		this.nativesDir.set(nativesDir);
 	}
 
-	public ConfigurableFileCollection getFiles() {
-		return files;
+	public CopySpec getExtra() {
+		return extra;
 	}
 
 	public ConfigurableFileCollection getLauncherSource() {
@@ -146,7 +158,19 @@ public class KWrapperExtension {
 		return natives;
 	}
 
+	public List<Action<CopySpec>> getLibraryModifications() {
+		return libraryModifications;
+	}
+
 	public void include(Object... objs) {
-		files.from(objs);
+		extra.from(objs);
+	}
+
+	public void libraries(@SuppressWarnings("rawtypes") Closure c) {
+		libraryModifications.add(new ClosureBackedAction<>(c));
+	}
+
+	public void libraries(Action<CopySpec> a) {
+		libraryModifications.add(a);
 	}
 }
