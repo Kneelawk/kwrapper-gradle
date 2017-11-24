@@ -165,6 +165,10 @@ public class KWrapperExtension {
 	public void include(Object... objs) {
 		extra.from(objs);
 	}
+	
+	public void extra(@SuppressWarnings("rawtypes") Closure c) {
+		c.call(extra);
+	}
 
 	public void libraries(@SuppressWarnings("rawtypes") Closure c) {
 		libraryModifications.add(new ClosureBackedAction<>(c));
