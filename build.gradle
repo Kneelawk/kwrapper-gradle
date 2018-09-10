@@ -7,7 +7,7 @@ plugins {
 sourceCompatibility = 1.8
 
 group = "com.github.kneelawk"
-version = "0.0.1"
+version = "0.0.2"
 
 gradlePlugin {
 	plugins {
@@ -18,9 +18,7 @@ gradlePlugin {
 	}
 }
 
-repositories {
-	jcenter()
-}
+repositories { jcenter() }
 
 dependencies {
 }

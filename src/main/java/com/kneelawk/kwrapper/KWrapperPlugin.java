@@ -1,12 +1,14 @@
 package com.kneelawk.kwrapper;
 
 import java.util.HashMap;
+import java.util.stream.Collectors;
 
 import org.gradle.api.Action;
 import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
+import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.file.CopySpec;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.tasks.SourceSet;
@@ -19,6 +21,9 @@ public class KWrapperPlugin implements Plugin<Project> {
 	public void apply(Project project) {
 		project.getPlugins().withType(JavaPlugin.class, (javaPlugin) -> {
 			KWrapperExtension ext = project.getExtensions().create("kwrapper", KWrapperExtension.class, project);
+
+			Configuration conf = project.getConfigurations().create("launcher");
+			conf.setTransitive(false);
 
 			project.afterEvaluate((p) -> {
 				SourceSet launcher = configureSourceSets(p, ext);
@@ -60,7 +65,7 @@ public class KWrapperPlugin implements Plugin<Project> {
 		Configuration compile = project.getConfigurations().getByName("runtime");
 		launcherJar.from(compile, (spec) -> {
 			spec.into(new CallableProviderWrapper<String>(ext.getLibrariesDir()));
-			
+
 			// execute all modifying actions
 			for (Action<CopySpec> a : ext.getLibraryModifications()) {
 				a.execute(spec);
@@ -70,6 +75,10 @@ public class KWrapperPlugin implements Plugin<Project> {
 		// put the natives into the natives dir
 		launcherJar.from(ext.getNatives(),
 				(spec) -> spec.into(new CallableProviderWrapper<String>(ext.getNativesDir())));
+
+		// add launcher dependency classes to the jar
+		launcherJar.from(project.getConfigurations().getByName("launcher").getFiles().stream()
+				.map(f -> f.isDirectory() ? project.fileTree(f) : project.zipTree(f)).collect(Collectors.toList()));
 
 		// add launcher classes to the jar
 		launcherJar.from(launcher.getOutput());
