@@ -36,6 +36,7 @@ public class KWrapperPlugin implements Plugin<Project> {
 		// create the launcher source set
 		SourceSetContainer sourceSets = (SourceSetContainer) project.getProperties().get("sourceSets");
 		SourceSet launcher = sourceSets.create(ext.getLauncherSourceSet().get());
+		launcher.setCompileClasspath(project.getConfigurations().getByName("launcher"));
 
 		// add the launcher sources to the launcher source set
 		launcher.getJava().srcDir(ext.getLauncherSource());
