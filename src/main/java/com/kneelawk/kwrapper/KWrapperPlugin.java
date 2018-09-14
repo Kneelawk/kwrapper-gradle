@@ -8,12 +8,13 @@ import org.gradle.api.Plugin;
 import org.gradle.api.Project;
 import org.gradle.api.Task;
 import org.gradle.api.artifacts.Configuration;
-import org.gradle.api.artifacts.ConfigurationContainer;
 import org.gradle.api.file.CopySpec;
 import org.gradle.api.plugins.JavaPlugin;
 import org.gradle.api.tasks.SourceSet;
 import org.gradle.api.tasks.SourceSetContainer;
 import org.gradle.api.tasks.bundling.Jar;
+import org.gradle.plugins.ide.eclipse.EclipsePlugin;
+import org.gradle.plugins.ide.eclipse.model.EclipseModel;
 
 public class KWrapperPlugin implements Plugin<Project> {
 
@@ -22,12 +23,19 @@ public class KWrapperPlugin implements Plugin<Project> {
 		project.getPlugins().withType(JavaPlugin.class, (javaPlugin) -> {
 			KWrapperExtension ext = project.getExtensions().create("kwrapper", KWrapperExtension.class, project);
 
-			Configuration conf = project.getConfigurations().create("launcher");
-			conf.setTransitive(false);
+			// create a configuration for launcher dependencies
+			Configuration launchConf = project.getConfigurations().create("launcher");
+			launchConf.setTransitive(false);
 
 			project.afterEvaluate((p) -> {
-				SourceSet launcher = configureSourceSets(p, ext, conf);
-				configureLauncherJarTask(p, ext, launcher, conf);
+				SourceSet launcher = configureSourceSets(p, ext, launchConf);
+				configureLauncherJarTask(p, ext, launcher, launchConf);
+			});
+
+			// add the launch configuration to the eclipse classpath
+			project.getPlugins().withType(EclipsePlugin.class, (eclipsePlugin) -> {
+				EclipseModel model = project.getExtensions().getByType(EclipseModel.class);
+				model.getClasspath().getPlusConfigurations().add(launchConf);
 			});
 		});
 	}
@@ -80,7 +88,9 @@ public class KWrapperPlugin implements Plugin<Project> {
 
 		// add launcher dependency classes to the jar
 		launcherJar.from(launchConf.getFiles().stream()
-				.map(f -> f.isDirectory() ? project.fileTree(f) : project.zipTree(f)).collect(Collectors.toList()));
+				.map(f -> f.isDirectory() ? project.fileTree(f)
+						: project.zipTree(f).matching(p -> p.exclude("module-info.class")))
+				.collect(Collectors.toList()));
 
 		// add launcher classes to the jar
 		launcherJar.from(launcher.getOutput());

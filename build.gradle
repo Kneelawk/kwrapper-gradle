@@ -7,7 +7,7 @@ plugins {
 sourceCompatibility = 1.8
 
 group = "com.github.kneelawk"
-version = "0.0.4-SNAPSHOT"
+version = "0.0.4"
 
 gradlePlugin {
 	plugins {
