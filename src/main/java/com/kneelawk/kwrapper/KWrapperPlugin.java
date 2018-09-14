@@ -26,17 +26,17 @@ public class KWrapperPlugin implements Plugin<Project> {
 			conf.setTransitive(false);
 
 			project.afterEvaluate((p) -> {
-				SourceSet launcher = configureSourceSets(p, ext);
-				configureLauncherJarTask(p, ext, launcher);
+				SourceSet launcher = configureSourceSets(p, ext, conf);
+				configureLauncherJarTask(p, ext, launcher, conf);
 			});
 		});
 	}
 
-	public SourceSet configureSourceSets(Project project, KWrapperExtension ext) {
+	public SourceSet configureSourceSets(Project project, KWrapperExtension ext, Configuration launchConf) {
 		// create the launcher source set
 		SourceSetContainer sourceSets = (SourceSetContainer) project.getProperties().get("sourceSets");
 		SourceSet launcher = sourceSets.create(ext.getLauncherSourceSet().get());
-		launcher.setCompileClasspath(project.getConfigurations().getByName("launcher"));
+		launcher.setCompileClasspath(launchConf);
 
 		// add the launcher sources to the launcher source set
 		launcher.getJava().srcDir(ext.getLauncherSource());
@@ -44,7 +44,8 @@ public class KWrapperPlugin implements Plugin<Project> {
 		return launcher;
 	}
 
-	public void configureLauncherJarTask(Project project, KWrapperExtension ext, SourceSet launcher) {
+	public void configureLauncherJarTask(Project project, KWrapperExtension ext, SourceSet launcher,
+			Configuration launchConf) {
 		// create jar task
 		Jar launcherJar = project.getTasks().create("launcherJar", Jar.class);
 		Jar jar = (Jar) project.getTasks().getByName(JavaPlugin.JAR_TASK_NAME);
@@ -78,7 +79,7 @@ public class KWrapperPlugin implements Plugin<Project> {
 				(spec) -> spec.into(new CallableProviderWrapper<String>(ext.getNativesDir())));
 
 		// add launcher dependency classes to the jar
-		launcherJar.from(project.getConfigurations().getByName("launcher").getFiles().stream()
+		launcherJar.from(launchConf.getFiles().stream()
 				.map(f -> f.isDirectory() ? project.fileTree(f) : project.zipTree(f)).collect(Collectors.toList()));
 
 		// add launcher classes to the jar
