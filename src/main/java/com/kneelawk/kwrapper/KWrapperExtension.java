@@ -40,7 +40,7 @@ public class KWrapperExtension {
 		nativesDir = project.getObjects().property(String.class);
 		nativesDir.set("natives");
 
-		launcherSource = project.files(launcherSourceSet.map((s) -> "src/" + s + "/java"), "CPControl/src/main/java");
+		launcherSource = project.files(launcherSourceSet.map((s) -> "src/" + s + "/java"));
 		natives = project.files("natives");
 
 		libraryModifications = new ArrayList<>();
